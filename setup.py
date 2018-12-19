@@ -7,8 +7,8 @@ description = (
 )
 
 setup(
-    name="Pycco",
-    version="0.6.0",
+    name="Pycco - Penguin Edition",
+    version="0.6.1",
     description=description,
     author="Zach Smith",
     author_email="subsetpark@gmail.com",
@@ -19,6 +19,6 @@ setup(
             'pycco = pycco.main:main',
         ]
     },
-    install_requires=['markdown', 'pygments', 'pystache', 'smartypants'],
+    install_requires=['markdown', 'pygments', 'pystache', 'smartypants', 'pymdown-extensions'],
     extras_require={'monitoring': 'watchdog'},
 )

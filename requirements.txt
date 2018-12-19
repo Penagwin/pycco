@@ -1,3 +1,4 @@
 pystache==0.5.4
 Pygments==2.2.0
 markdown==2.6.11
+pymdown-extensions==6.0

@@ -302,6 +302,10 @@ def highlight(sections, language, preserve_paths=True, outdir=None):
                 'markdown.extensions.smarty',
                 'markdown.extensions.fenced_code',
                 'markdown.extensions.footnotes',
+                'markdown.extensions.tables',
+                'markdown.extensions.codehilite',
+                'markdown.extensions.nl2br',
+                'markdown.extensions.attr_list'
             ]
         )
         section["num"] = i
@@ -617,6 +621,7 @@ def main():
                       action='store_true',
                       dest='skip_bad_files',
                       help='Continue processing after hitting a bad file')
+    parser.add_argument('-v', '--version', action='version', version='Pycco - 🐧 Penguin Edition 2.0.4')
 
     parser.add_argument('sources', nargs='*')
 
