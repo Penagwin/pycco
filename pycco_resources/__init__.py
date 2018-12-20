@@ -1,6 +1,10 @@
 import pystache
 
 css = """\
+
+.codehilite {
+  font-size: .8em;
+}
 /*--------------------- Layout and Typography ----------------------------*/
 body {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
@@ -110,6 +114,7 @@ div.docs {
         opacity: 1;
       }
 div.code {
+  border-bottom: 1px #c5c5cc dotted;
   margin-left: 580px;
   padding: 14px 15px 16px 50px;
   vertical-align: top;
