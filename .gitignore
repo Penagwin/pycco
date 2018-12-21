@@ -1,6 +1,6 @@
 .coverage
 *.pyc
-/Pycco.egg-info
+*.egg-info
 build/*
 dist/*
 docs/*
