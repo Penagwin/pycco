@@ -1,8 +1,0 @@
-markdown
-pygments
-pystache
-smartypants
-pymdown-extensions
-
-[monitoring]
-watchdog
