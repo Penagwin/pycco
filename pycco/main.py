@@ -135,16 +135,16 @@ def parse(code, language):
         # Only go into multiline comments section when one of the delimiters is
         # found to be at the start of a line
         if multistart and multiend \
-           and any(line.lstrip().startswith(delim) or line.rstrip().endswith(delim)
-                   for delim in (multistart, multiend)):
+           and (multistart in line or multiend in line):
             multi_line = not multi_line
-
+            if multiend in line:
+                print(multi_line, multi_string)
             if multi_line \
-               and line.strip().endswith(multiend) \
+               and multiend in line \
                and len(line.strip()) > len(multiend):
                 multi_line = False
 
-            if not line.strip().startswith(multistart) and not multi_line \
+            if not multistart in line and not multiend in line and not multi_line \
                or multi_string:
 
                 process_as_code = True
@@ -160,8 +160,11 @@ def parse(code, language):
                 # docs
                 line = line.replace(multistart, '')
                 line = line.replace(multiend, '')
+                matches = re.match(r"(^\s+(?= \*))|(^\s+)", line)
+                indent_level = matches.group(0) if matches else ""
+                line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+
                 docs_text += line.strip() + '\n'
-                indent_level = re.match(r"\s*", line).group(0)
 
                 if has_code and docs_text.strip():
                     save(docs_text, code_text[:-1])
@@ -171,9 +174,17 @@ def parse(code, language):
         elif multi_line:
             # Remove leading spaces
             if re.match(r' {{{:d}}}'.format(len(indent_level)), line):
-                docs_text += line[len(indent_level):] + '\n'
+                line = line[len(indent_level):] + '\n'
+                line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+
             else:
-                docs_text += line + '\n'
+                line = line + '\n'
+                line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+            if language["name"] == "javascript":
+                if line.strip().startswith("@"):
+                    line = "\n\t" + line
+            docs_text += line
+
 
         elif re.match(comment_matcher, line):
             if has_code:
@@ -620,7 +631,7 @@ def main():
                       action='store_true',
                       dest='skip_bad_files',
                       help='Continue processing after hitting a bad file')
-    parser.add_argument('-v', '--version', action='version', version='Pycco - Penguin Edition 2.0.5 🐧')
+    parser.add_argument('-v', '--version', action='version', version='Pycco - Penguin Edition 2.0.6 🐧')
 
     parser.add_argument('sources', nargs='*')
 
