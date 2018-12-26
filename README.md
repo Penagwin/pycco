@@ -20,6 +20,8 @@ d8888b. d88888b d8b   db  d888b  db    db d888888b d8b   db
              "Y88P"
 ```
 
+This is the Penguin Fork of Pycco.
+
 Pycco is a Python port of Docco: the original quick-and-dirty, hundred-line-
 long, literate-programming-style documentation generator. For more information,
 see:

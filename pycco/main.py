@@ -136,9 +136,11 @@ def parse(code, language):
         # found to be at the start of a line
         if multistart and multiend \
            and (multistart in line or multiend in line):
+            if not multi_line and language['name'] == 'javascript':
+                save(docs_text, code_text[:-1])
+
             multi_line = not multi_line
-            if multiend in line:
-                print(multi_line, multi_string)
+
             if multi_line \
                and multiend in line \
                and len(line.strip()) > len(multiend):
@@ -167,7 +169,8 @@ def parse(code, language):
                 docs_text += line.strip() + '\n'
 
                 if has_code and docs_text.strip():
-                    save(docs_text, code_text[:-1])
+                    if language["name"] is not "javascript":
+                        save(docs_text, code_text[:-1])
                     code_text = code_text.split('\n')[-1]
                     has_code = docs_text = ''
 
