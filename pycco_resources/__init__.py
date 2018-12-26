@@ -2,7 +2,9 @@ import pystache
 
 css = """\
 
-
+.single_comment {
+    color: #99A4AE;
+}
 .codehilite {
   font-size: .8em;
 }

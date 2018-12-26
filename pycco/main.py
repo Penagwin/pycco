@@ -137,6 +137,7 @@ def parse(code, language):
         if multistart and multiend \
            and (multistart in line or multiend in line):
             if not multi_line and language['name'] == 'javascript':
+                print(docs_text)
                 save(docs_text, code_text[:-1])
 
             multi_line = not multi_line
@@ -168,7 +169,7 @@ def parse(code, language):
 
                 docs_text += line.strip() + '\n'
 
-                if has_code and docs_text.strip():
+                if has_code or docs_text.strip():
                     if language["name"] is not "javascript":
                         save(docs_text, code_text[:-1])
                     code_text = code_text.split('\n')[-1]
@@ -176,13 +177,15 @@ def parse(code, language):
 
         elif multi_line:
             # Remove leading spaces
+
             if re.match(r' {{{:d}}}'.format(len(indent_level)), line):
                 line = line[len(indent_level):] + '\n'
                 line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
-
             else:
                 line = line + '\n'
                 line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+
+            print(line)
             if language["name"] == "javascript":
                 if line.strip().startswith("@"):
                     line = "\n\t" + line
@@ -193,12 +196,12 @@ def parse(code, language):
             if has_code:
                 save(docs_text, code_text)
                 has_code = docs_text = code_text = ''
-            docs_text += re.sub(comment_matcher, "", line) + "\n"
+            docs_text += "<span class='single_comment'>" + re.sub(comment_matcher, "", line) + "</span>\n"
 
         else:
             process_as_code = True
 
-        if process_as_code:
+        if process_as_code :
             if code_text and any(line.lstrip().startswith(x)
                                  for x in ['class ', 'def ', '@']):
                 if not code_text.lstrip().startswith("@"):
@@ -209,7 +212,7 @@ def parse(code, language):
             code_text += line + '\n'
 
     save(docs_text, code_text)
-
+    print(sections)
     return sections
 
 # === Preprocessing the comments ===
