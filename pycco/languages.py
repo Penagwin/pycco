@@ -7,7 +7,7 @@ add another language to Pycco's repertoire, add it here.
 __all__ = ("supported_languages",)
 
 HASH = "#"
-SLASH_STAR = "/*"
+SLASH_STAR = "/**"
 STAR_SLASH = "*/"
 SLASH_SLASH = "//"
 DASH_DASH = "--"

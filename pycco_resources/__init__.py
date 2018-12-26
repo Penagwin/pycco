@@ -2,6 +2,7 @@ import pystache
 
 css = """\
 
+
 .codehilite {
   font-size: .8em;
 }
@@ -205,6 +206,9 @@ html = """\
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
   <title>{{ title }}</title>
   <link rel="stylesheet" href="{{ stylesheet }}">
+  <style>.markdown-section#main{
+    max-width: initial!important;
+}</style>
 </head>
 <body>
 <div id='container'>

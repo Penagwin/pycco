@@ -76,7 +76,7 @@ def generate_documentation(source, outdir=None, preserve_paths=True,
 
     if not outdir:
         raise TypeError("Missing the required 'outdir' keyword argument.")
-    code = open(source, "rb").read().decode(encoding)
+    code = open(source, "rb").read().decode(encoding, 'ignore')
     return _generate_documentation(source, code, outdir, preserve_paths, language)
 
 
@@ -289,7 +289,7 @@ def highlight(sections, language, preserve_paths=True, outdir=None):
         try:
             docs_text = unicode(section["docs_text"])
         except UnicodeError:
-            docs_text = unicode(section["docs_text"].decode('utf-8'))
+            docs_text = unicode(section["docs_text"].decode('utf-8', 'ignore'))
         except NameError:
             docs_text = section['docs_text']
         section["docs_html"] = markdown(
