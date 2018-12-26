@@ -107,7 +107,6 @@ def parse(code, language):
     lines = code.split("\n")
     sections = []
     has_code = docs_text = code_text = ""
-
     if lines[0].startswith("#!"):
         lines.pop(0)
 
@@ -136,7 +135,7 @@ def parse(code, language):
         # found to be at the start of a line
         if multistart and multiend \
            and (multistart in line or multiend in line):
-            if not multi_line and language['name'] == 'javascript':
+            if multiend in line and language['name'] == 'javascript':
                 print(docs_text)
                 save(docs_text, code_text[:-1])
 
