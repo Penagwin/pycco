@@ -135,9 +135,7 @@ def parse(code, language):
         # found to be at the start of a line
         if multistart and multiend \
            and (multistart in line or multiend in line):
-            if multiend in line and language['name'] == 'javascript':
-                print(docs_text)
-                save(docs_text, code_text[:-1])
+            
 
             multi_line = not multi_line
 
@@ -162,15 +160,21 @@ def parse(code, language):
                 # docs
                 line = line.replace(multistart, '')
                 line = line.replace(multiend, '')
-                matches = re.match(r"(^\s+(?= \*))|(^\s+)", line)
-                indent_level = matches.group(0) if matches else ""
-                line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+                if language['name'] == 'javascript':
+                    matches = re.match(r"(^\s+(?= \*))|(^\s+)", line)
+                    indent_level = matches.group(0) if matches else ""
+                    line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+                else:
+                    indent_level = re.match(r"\s*", line).group(0)
 
                 docs_text += line.strip() + '\n'
-
-                if has_code or docs_text.strip():
-                    if language["name"] is not "javascript":
-                        save(docs_text, code_text[:-1])
+                
+                if has_code and language['name'] == 'javascript':
+                    save(docs_text, code_text)
+                    code_text = code_text.split('\n')[-1]
+                    has_code = docs_text = ''
+                elif has_code and docs_text.strip() :
+                    save(docs_text, code_text[:-1])
                     code_text = code_text.split('\n')[-1]
                     has_code = docs_text = ''
 
@@ -195,7 +199,10 @@ def parse(code, language):
             if has_code:
                 save(docs_text, code_text)
                 has_code = docs_text = code_text = ''
-            docs_text += "<span class='single_comment'>" + re.sub(comment_matcher, "", line) + "</span>\n"
+            if language["name"] is not "bash":
+                docs_text += "<span class='single_comment'>" + re.sub(comment_matcher, "", line) + "</span>\n"
+            else:
+                docs_text += re.sub(comment_matcher, "", line)  +"\n"
 
         else:
             process_as_code = True
@@ -211,7 +218,6 @@ def parse(code, language):
             code_text += line + '\n'
 
     save(docs_text, code_text)
-    print(sections)
     return sections
 
 # === Preprocessing the comments ===
@@ -636,7 +642,7 @@ def main():
                       action='store_true',
                       dest='skip_bad_files',
                       help='Continue processing after hitting a bad file')
-    parser.add_argument('-v', '--version', action='version', version='Pycco - Penguin Edition 2.0.6 🐧')
+    parser.add_argument('-v', '--version', action='version', version='Pycco - Penguin Edition 2.0.7∂ 🐧')
 
     parser.add_argument('sources', nargs='*')
 
