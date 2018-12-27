@@ -129,7 +129,7 @@ def parse(code, language):
     multistart, multiend = language.get("multistart"), language.get("multiend")
     comment_matcher = language['comment_matcher']
 
-    for line in lines:
+    for lin_num, line in enumerate(lines):
         process_as_code = False
         # Only go into multiline comments section when one of the delimiters is
         # found to be at the start of a line
@@ -173,7 +173,7 @@ def parse(code, language):
                     save(docs_text, code_text)
                     code_text = code_text.split('\n')[-1]
                     has_code = docs_text = ''
-                elif has_code and docs_text.strip() :
+                elif multistart in line and has_code and docs_text.strip() :
                     save(docs_text, code_text[:-1])
                     code_text = code_text.split('\n')[-1]
                     has_code = docs_text = ''
@@ -188,10 +188,11 @@ def parse(code, language):
                 line = line + '\n'
                 line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
 
-            print(line)
             if language["name"] == "javascript":
+                if line.strip().endswith("."):
+                    line += "\n"
                 if line.strip().startswith("@"):
-                    line = line.split(' ')
+                    line = line.strip().split(' ')
                     line = "\n<pre class='jsdoc'>" + \
                         "<span class='kr'>" + line[0] + "</span> " + \
                         "<span class='s2'>" + line[1] + "</span> " + \
@@ -214,7 +215,7 @@ def parse(code, language):
         if process_as_code :
             if code_text and any(line.lstrip().startswith(x)
                                  for x in ['class ', 'def ', '@']):
-                if not code_text.lstrip().startswith("@"):
+                if lin_num is not 0 and not lines[lin_num - 1].lstrip().startswith("@"):
                     save(docs_text, code_text)
                     code_text = has_code = docs_text = ''
 
