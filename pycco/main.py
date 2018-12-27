@@ -191,7 +191,11 @@ def parse(code, language):
             print(line)
             if language["name"] == "javascript":
                 if line.strip().startswith("@"):
-                    line = "\n\t" + line
+                    line = line.split(' ')
+                    line = "\n<pre class='jsdoc'>" + \
+                        "<span class='kr'>" + line[0] + "</span> " + \
+                        "<span class='s2'>" + line[1] + "</span> " + \
+                        " ".join(line[2:])  + '</pre>'
             docs_text += line
 
 
