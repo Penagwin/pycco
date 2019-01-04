@@ -1,7 +1,64 @@
 import pystache
 
 css = """\
+.pydoc {
+  padding-top: 0px!important;
+  padding-bottom: 0px!important;
+  margin-top: 0px!important;
+  padding-left: 15px;
+  margin-bottom: 0px!important;
+  font-size: .75em!important;
+  background-color: #fafafa;
 
+}
+
+.def.nf{
+  font-wieght: lighter;
+  font-size: .9em; 
+}
+
+.class.nf code::before {
+  content: "Class - ";
+  color: #a0a0a0;
+
+}
+
+
+.indent-docs p:first-of-type {
+  margin-top: 15px;
+}
+
+.declaration {
+  font-weight: bold;
+      padding-top: 5px!important;
+    padding-bottom: 5px!important;
+    margin-top: 0px!important;
+    padding-left: 2.8em!important;
+    font-size: .9em;
+    margin-bottom: 0px!important;
+    background-color: #fafafa;
+}
+
+.pydoc:first-of-type {
+    padding-top: 5px!important;
+}
+.pydoc:last-of-type {
+    padding-bottom: 5px!important;
+}
+
+.pydoc + p{
+  margin-top: 5px;
+
+}
+
+.pydoc.indent {
+  padding-left: 2em;
+  text-indent: 0em;
+}
+
+.indent-docs {
+    padding-left: 3em;
+}
 .single_comment {
     color: #99A4AE;
 }
@@ -24,7 +81,7 @@ a {
     color: #261a3b;
   }
 p {
-  margin: 0 0 15px 0;
+  margin: 0 0 0px 0;
 }
 h1, h2, h3, h4, h5, h6 {
   margin: 40px 0 15px 0;
@@ -38,9 +95,14 @@ h2, h3, h4, h5, h6 {
 #container, div.section {
   position: relative;
 }
+
+#container, div.section:first-of-type {
+  position: relative;
+  padding-bottom: 0;
+}
 #background {
   position: absolute;
-  top: 0; left: 580px; right: 0; bottom: 0;
+  top: 0; left: 780px; right: 0; bottom: 0;
   background: #f5f5ff;
   border-left: 1px solid #e5e5ee;
   z-index: 0;
@@ -83,16 +145,24 @@ h2, h3, h4, h5, h6 {
         }
 div.docs {
   float: left;
-  max-width: 500px;
-  min-width: 500px;
+  max-width: 700px;
+  min-width: 700px;
   min-height: 5px;
   padding: 10px 25px 1px 50px;
   vertical-align: top;
   text-align: left;
+    padding-bottom: 2em!important;
+}
+
+div.docs:first-child {
+      padding-bottom: 0em;
+
 }
   .docs pre {
     margin: 15px 0 15px;
-    padding-left: 15px;
+    white-space: pre-wrap;
+    padding-left: 4em;
+    text-indent: -2em;
   }
   .docs p tt, .docs p code {
     background: #f8f8ff;
@@ -117,8 +187,8 @@ div.docs {
         opacity: 1;
       }
 div.code {
-  border-bottom: 1px #c5c5cc dotted;
-  margin-left: 580px;
+  border-top: 1px #c5c5cc dotted;
+  margin-left: 780px;
   padding: 14px 15px 16px 50px;
   vertical-align: top;
 }

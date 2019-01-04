@@ -51,6 +51,7 @@ import os
 import re
 import sys
 import time
+import ast
 from os import path
 
 import pygments
@@ -126,6 +127,7 @@ def parse(code, language):
     # Setup the variables to get ready to check for multiline comments
     multi_line = False
     multi_string = False
+    inside_docstring = False
     multistart, multiend = language.get("multistart"), language.get("multiend")
     comment_matcher = language['comment_matcher']
 
@@ -142,7 +144,7 @@ def parse(code, language):
             if multi_line \
                and multiend in line \
                and len(line.strip()) > len(multiend):
-                multi_line = False
+                multi_line = True
 
             if not multistart in line and not multiend in line and not multi_line \
                or multi_string:
@@ -160,6 +162,30 @@ def parse(code, language):
                 # docs
                 line = line.replace(multistart, '')
                 line = line.replace(multiend, '')
+
+                if language["name"] == "python" and multi_line:
+                    if "def" in code_text or "class" in code_text:
+                        class_type = "def" if "def" in code_text else "class"
+                        try:
+                            temp_codeline = code_text + ""
+                            temp_codeline = re.sub(r'(^\s+)', '', temp_codeline, flags=re.M)
+                            tree = ast.parse(temp_codeline+ "\n pass")
+                            docs_text += "#### <span class='nf "+ class_type+"'>`" + tree.body[0].name + "`</span>\n"
+                            docs_text += "<div class='indent-docs' markdown='1'>"
+                            inside_docstring = True
+                        except Exception as e:
+                            print(code_text)
+                            print(line)
+                            print(temp_codeline)
+                            print(len(indent_level))
+                            print(e)
+
+                if language["name"] == "python" and not  multi_line and inside_docstring:
+                    docs_text += "</div>\n"
+                    inside_docstring = False
+
+
+
                 if language['name'] == 'javascript':
                     matches = re.match(r"(^\s+(?= \*))|(^\s+)", line)
                     indent_level = matches.group(0) if matches else ""
@@ -180,24 +206,53 @@ def parse(code, language):
 
         elif multi_line:
             # Remove leading spaces
-
+            matches = re.match(r"(^\s+(?= \*))|(^\s+)", line)
+            indent_level_current = matches.group(0) if matches else ""
             if re.match(r' {{{:d}}}'.format(len(indent_level)), line):
                 line = line[len(indent_level):] + '\n'
-                line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
-            else:
-                line = line + '\n'
-                line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+            #    line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
+            #else:
+            #    line = line + '\n'
+            #    line = re.sub(r'(^\s+\*\ )|^\s+\*$', '', line)
 
+
+            if language["name"] == "python":
+                split_line = line.strip().split(' ')
+                if line.strip().startswith("*"):
+                    pass
+                elif len(indent_level_current) - 4 == len(indent_level) and len(line) > 4:
+                    if len(split_line) > 1:
+                        current_line = " ".join(split_line[1:])
+
+                        line = "\n<pre class='pydoc'>" + \
+                            "<span class='kr'>" + split_line[0] + "</span> " + \
+                            '<span class="s2">' + (re.search(r'\(.*\):', current_line) or [''])[0] + '</span>' +\
+                            '\n<span class="code">' + re.sub(r'\(.*\):', '', current_line).lstrip() + '</span>'\
+                            '</pre>'
+                            
+                elif len(indent_level_current) - 8 == len(indent_level) and len(line) > 4:
+                    if len(split_line) > 1:
+                        line = "\n<pre class='pydoc indent'>" + \
+                            " ".join(split_line[0:])  + '</pre>'
+                elif len(indent_level_current) == len(indent_level) and re.match(r'^\s*[^\s]*:', line.strip()):
+                #elif  "Args" in line or "Returns" in line or "Methods" in line:
+                    line = "\n<pre class='declaration'>" + \
+                        " ".join(split_line[0:])  + '</pre>'
+                else:
+                    if line.strip().endswith("."):
+                        line += "\n"
             if language["name"] == "javascript":
-                if line.strip().endswith("."):
-                    line += "\n"
+
                 if line.strip().startswith("@"):
                     line = line.strip().split(' ')
                     line = "\n<pre class='jsdoc'>" + \
                         "<span class='kr'>" + line[0] + "</span> " + \
                         "<span class='s2'>" + line[1] + "</span> " + \
                         " ".join(line[2:])  + '</pre>'
-            docs_text += line
+                else:
+                    if line.strip().endswith("."):
+                        line += "\n"
+            docs_text += line + "\n"
 
 
         elif re.match(comment_matcher, line):
@@ -215,7 +270,7 @@ def parse(code, language):
         if process_as_code :
             if code_text and any(line.lstrip().startswith(x)
                                  for x in ['class ', 'def ', '@']):
-                if lin_num is not 0 and not lines[lin_num - 1].lstrip().startswith("@"):
+                if lin_num is not 0 and not lines[lin_num - 1].lstrip().startswith("@") and "class Meta:" not in line:
                     save(docs_text, code_text)
                     code_text = has_code = docs_text = ''
 
